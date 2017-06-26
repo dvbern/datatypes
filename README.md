@@ -1,6 +1,7 @@
-# Project Title
+# lib-swiss-datatypes
 
 Library for generic Swiss datatypes
+* IBAN
 * social security number (AHV / AVS)
 * Postfinance (Postkonto)
 * ZPV (canton of Berne ID)
