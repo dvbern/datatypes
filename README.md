@@ -1,6 +1,6 @@
 # lib-swiss-datatypes
 
-Library for generic Swiss datatypes
+This library can be used for generic Swiss datatypes like:
 * IBAN
 * social security number (AHV / AVS)
 * Postfinance (Postkonto)
@@ -9,7 +9,7 @@ Library for generic Swiss datatypes
 
 ## Getting Started
 
-These instructions will get you an overview on how to implement and use the dvbern-lib-<> library. See further down for installing or deployment notes.
+These instructions will get you an overview on how to implement and use the dvbern-lib-swiss-datatypes library. See further down for installing or deployment notes.
 
 ### Prerequisites
 
@@ -51,7 +51,7 @@ One healthy social atmospehere is very important to us, wherefore we rate our Co
 
 * **DV Bern AG** - *Initial work* - [dvbern](https://github.com/dvbern)
 
-See also the list of [contributors](https://github.com/dvbern/OS-Publishing-Templates/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/dvbern/lib-swiss-datatypes/contributors) who participated in this project.
 
 ## License
 
