@@ -1,4 +1,4 @@
-# lib-swiss-datatypes
+# datatypes
 
 Library for generic Swiss datatypes
 * IBAN
