@@ -23,12 +23,12 @@
         <version>1.0.3</version>
     </parent>
 
-    <groupId>ch.dvbern.oss.lib.dvbern-lib-datatypes</groupId>
-    <artifactId>dvbern-lib-datatypes</artifactId>
+    <groupId>ch.dvbern.oss.datatypes</groupId>
+    <artifactId>datatypes</artifactId>
     <packaging>jar</packaging>
     <version>2.0.2-SNAPSHOT</version>
 
-    <name>dvbern-lib-datatypes</name>
+    <name>DVBern Datatypes</name>
 
     <properties>
         <maven-compiler-plugin.source>1.5</maven-compiler-plugin.source>
@@ -62,7 +62,7 @@
 
     <issueManagement>
         <system>github-issues</system>
-        <url>https://github.com/dvbern/lib-datatypes/issues</url>
+        <url>https://github.com/dvbern/datatypes/issues</url>
     </issueManagement>
 
     <developers>
