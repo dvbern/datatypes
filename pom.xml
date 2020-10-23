@@ -20,15 +20,17 @@
     <parent>
         <groupId>ch.dvbern.oss.maven</groupId>
         <artifactId>parent</artifactId>
-        <version>1.0.3</version>
+        <version>2.0.0</version>
     </parent>
 
     <groupId>ch.dvbern.oss.datatypes</groupId>
     <artifactId>datatypes</artifactId>
     <packaging>jar</packaging>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 
     <name>DVBern Datatypes</name>
+    <description>This library can be used for generic datatypes like IBAN etc.</description>
+    <url>http://github.com/dvbern/datatypes</url>
 
     <properties>
         <maven-compiler-plugin.source>1.5</maven-compiler-plugin.source>
@@ -85,6 +87,12 @@
             </roles>
         </developer>
     </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/dvbern/datatypes.git</connection>
+        <developerConnection>scm:git:ssh://github.com:dvbern/datatypes.git</developerConnection>
+        <url>http://github.com/dvbern/datatypes/tree/master</url>
+    </scm>
 
     <profiles>
         <profile>
