@@ -14,15 +14,11 @@
  */
 package ch.dvbern.oss.datatypes;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author beph
- */
 public class SozialversicherungsnummerTest {
 
 	@Test
@@ -65,18 +61,26 @@ public class SozialversicherungsnummerTest {
 		assertEquals(nr, nummer.getNummerAsString());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testTooShort() {
+		IllegalArgumentException ex = assertThrows(
+			IllegalArgumentException.class,
+			() -> new SozialversicherungsNummer("1")
+		);
 
-		//noinspection ResultOfObjectAllocationIgnored
-		new SozialversicherungsNummer("1");
+		assertThat(ex)
+			.hasMessageContaining(" 1 ");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testTooLong() {
+		IllegalArgumentException ex = assertThrows(
+			IllegalArgumentException.class,
+			() -> new SozialversicherungsNummer("12345678901234")
+		);
 
-		//noinspection ResultOfObjectAllocationIgnored
-		new SozialversicherungsNummer("12345678901234");
+		assertThat(ex)
+			.hasMessageContaining(" 12345678901234 ");
 	}
 
 	@Test
