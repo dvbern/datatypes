@@ -15,11 +15,10 @@
 
 package ch.dvbern.oss.datatypes;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for IBAN
@@ -39,9 +38,9 @@ public class IBANTest {
 		assertEquals(new IBAN(IBAN_1), new IBAN(IBAN_1));
 		assertEquals(new IBAN(IBAN_1), new IBAN(IBAN_1_UNFORMATTED));
 
-		assertFalse(new IBAN(IBAN_1).equals(new IBAN(IBAN_2)));
+		assertNotEquals(new IBAN(IBAN_2), new IBAN(IBAN_1));
 		//noinspection ObjectEqualsNull
-		assertFalse(new IBAN(IBAN_1).equals(null));
+		assertNotEquals(new IBAN(IBAN_1), null);
 	}
 
 	@Test
@@ -85,8 +84,14 @@ public class IBANTest {
 		assertEquals(CLEARING, new IBAN(IBAN_2_UNFORMATTED).extractClearingNr());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testExtractClearingNumberValid() {
-		new IBAN("InvalidNumber").extractClearingNr();
+		IllegalArgumentException ex = assertThrows(
+			IllegalArgumentException.class,
+			() -> new IBAN("InvalidNumber").extractClearingNr()
+		);
+
+		assertThat(ex)
+			.hasMessageContaining("InvalidNumber");
 	}
 }
