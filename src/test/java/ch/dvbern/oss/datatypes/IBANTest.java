@@ -15,10 +15,11 @@
 
 package ch.dvbern.oss.datatypes;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for IBAN
@@ -27,71 +28,190 @@ public class IBANTest {
 
 	private static final String IBAN_1 = "CH63 0900 0000 2500 9779 8";
 	private static final String IBAN_2 = "CH95 0900 0000 6076 1739 7";
+	private static final String IBAN_WITHOUT_CLEARING_NUMBER = "FO92 6460 0123 4567 89";
 
-	private static final String IBAN_1_UNFORMATTED = IBAN_1.replaceAll(" ", "");
-	private static final String IBAN_2_UNFORMATTED = IBAN_2.replaceAll(" ", "");
+	private static final String IBAN_1_UNFORMATTED = noWhitespace(IBAN_1);
+	private static final String IBAN_2_UNFORMATTED = noWhitespace(IBAN_2);
+	private static final String IBAN_WITHOUT_CLEARING_NUMBER_UNFORMATTED = noWhitespace(IBAN_WITHOUT_CLEARING_NUMBER);
 
 	private static final String CLEARING = "09000";
 
-	@Test
-	public void testEquals() {
-		assertEquals(new IBAN(IBAN_1), new IBAN(IBAN_1));
-		assertEquals(new IBAN(IBAN_1), new IBAN(IBAN_1_UNFORMATTED));
-
-		assertNotEquals(new IBAN(IBAN_2), new IBAN(IBAN_1));
-		//noinspection ObjectEqualsNull
-		assertNotEquals(new IBAN(IBAN_1), null);
+	private static String noWhitespace(String iban) {
+		return iban.replaceAll("\\s", "");
 	}
 
-	@Test
-	public void testCompareTo() {
-		assertEquals(0, new IBAN("CH63 0900 0000 2500 9779 8").compareTo(new IBAN("CH63 0900 0000 2500 9779 8")));
-		assertEquals(-1, new IBAN("CH63 0900 0000 2500 9779 8").compareTo(new IBAN("CH63 0900 0000 2500 9779 9")));
-		assertEquals(1, new IBAN("CH63 0900 0000 2500 9779 8").compareTo(new IBAN("CH63 0900 0000 2500 9779 7")));
+	@Nested
+	class ExtractClearingNumber {
+
+		@Test
+		public void extracts_clearingNumber() {
+			assertThat(new IBAN(IBAN_1).extractClearingNr())
+				.isEqualTo(CLEARING);
+			assertThat(new IBAN(IBAN_2).extractClearingNr())
+				.isEqualTo(CLEARING);
+			assertThat(new IBAN(IBAN_1_UNFORMATTED).extractClearingNr())
+				.isEqualTo(CLEARING);
+			assertThat(new IBAN(IBAN_2_UNFORMATTED).extractClearingNr())
+				.isEqualTo(CLEARING);
+		}
+
+		@Test
+		public void extracts_clearingNumber_for_iban_without_clearingNumber() {
+			assertThat(new IBAN("FO92 6460 0123 4567 89").extractClearingNr())
+				.isNull();
+		}
+
+		@Test
+		public void throws_for_invalid_input() {
+			assertThatThrownBy(() -> new IBAN("InvalidNumber").extractClearingNr())
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("InvalidNumber");
+		}
+
 	}
 
-	@Test
-	public void testToString() {
-		assertEquals(IBAN_1, new IBAN(IBAN_1).toString());
-		assertEquals(IBAN_1, new IBAN(IBAN_1_UNFORMATTED).toString());
+	@Nested
+	class HashcodeEquals {
 
-		assertEquals("CH", new IBAN("CH").toString());
-		assertEquals("CH63", new IBAN("CH63").toString());
-		assertEquals("1234 5678 9", new IBAN("123456789").toString());
-		assertEquals("1234 5678 9012 3456 789", new IBAN("123456789    0123456789                    ").toString());
-		assertEquals("1234 5678 9012 3456 7890", new IBAN("12345678901234567890").toString());
-		assertEquals("1234 5678 9012 3456 7890 1", new IBAN("123456789012345678901").toString());
+		@Test
+		void equals_is_equal_with_same_instance() {
+			IBAN iban = new IBAN(IBAN_1);
+			assertThat(iban)
+				.isEqualTo(iban);
+		}
+
+		@Test
+		void equals_is_symmetric() {
+			assertThat(new IBAN(IBAN_1))
+				.isEqualTo(new IBAN(IBAN_1));
+		}
+
+		@Test
+		public void equals_is_equal_independent_of_formatting() {
+			assertThat(new IBAN(IBAN_1))
+				.isEqualTo(new IBAN(IBAN_1_UNFORMATTED));
+			assertThat(new IBAN(IBAN_1_UNFORMATTED))
+				.isEqualTo(new IBAN(IBAN_1));
+
+			assertThat(new IBAN(IBAN_WITHOUT_CLEARING_NUMBER))
+				.isEqualTo(new IBAN(IBAN_WITHOUT_CLEARING_NUMBER_UNFORMATTED));
+			assertThat(new IBAN(IBAN_WITHOUT_CLEARING_NUMBER_UNFORMATTED))
+				.isEqualTo(new IBAN(IBAN_WITHOUT_CLEARING_NUMBER));
+		}
+
+		@Test
+		public void equals_differs_for_different_ibans() {
+			assertThat(new IBAN(IBAN_1))
+				.isNotEqualTo(new IBAN(IBAN_2));
+			assertThat(new IBAN(IBAN_2))
+				.isNotEqualTo(new IBAN(IBAN_1));
+		}
+
+		@Test
+		public void equals_differs_for_different_classes() {
+			assertThat(new IBAN(IBAN_1))
+				.isNotEqualTo(new Object());
+		}
+
+		@Test
+		void equals_differs_for_null() {
+			assertThat(new IBAN(IBAN_1))
+				.isNotEqualTo(null);
+		}
+
+		@Test
+		public void hashcode_is_same_independent_of_formatting() {
+			assertThat(new IBAN(IBAN_1))
+				.hasSameHashCodeAs(new IBAN(IBAN_1));
+			assertThat(new IBAN(IBAN_1))
+				.hasSameHashCodeAs(new IBAN(IBAN_1_UNFORMATTED));
+		}
 	}
 
-	@Test
-	public void testIsValid() {
-		assertTrue(new IBAN(IBAN_1).isValid());
-		assertTrue(new IBAN(IBAN_2).isValid());
-		assertTrue(new IBAN(IBAN_1_UNFORMATTED).isValid());
-		assertTrue(new IBAN(IBAN_2_UNFORMATTED).isValid());
+	@Nested
+	class IsValid {
 
-		assertFalse(new IBAN("AnyString").isValid());
-		assertFalse(new IBAN("XY123456").isValid());
+		@Test
+		public void accepts_valid_values() {
+			assertThat(new IBAN(IBAN_1).isValid())
+				.isTrue();
+			assertThat(new IBAN(IBAN_2).isValid())
+				.isTrue();
+			assertThat(new IBAN(IBAN_1_UNFORMATTED).isValid())
+				.isTrue();
+			assertThat(new IBAN(IBAN_2_UNFORMATTED).isValid())
+				.isTrue();
+			assertThat(new IBAN(IBAN_WITHOUT_CLEARING_NUMBER).isValid())
+				.isTrue();
 
-		assertFalse(new IBAN().isValid());
+			assertThat(new IBAN("AnyString").isValid())
+				.isFalse();
+			assertThat(new IBAN("XY123456").isValid())
+				.isFalse();
+			assertThat(new IBAN().isValid())
+				.isFalse();
+		}
+
+		@Test
+		public void rejects_numbers_with_invalid_checksum() {
+			// a valid IBAN would be: CH63 0900 0000 2500 9779 8
+			assertThat(new IBAN("CH63 0900 0000 2500 9779 9").isValid())
+				.isFalse();
+		}
+
+		@Test
+		public void rejects_invalid_values() {
+			assertThat(new IBAN("AnyString").isValid())
+				.isFalse();
+			assertThat(new IBAN("XY123456").isValid())
+				.isFalse();
+			assertThat(new IBAN().isValid())
+				.isFalse();
+		}
 	}
 
-	@Test
-	public void testExtractClearingNumber() {
-		assertEquals(CLEARING, new IBAN(IBAN_1).extractClearingNr());
-		assertEquals(CLEARING, new IBAN(IBAN_2).extractClearingNr());
-		assertEquals(CLEARING, new IBAN(IBAN_1_UNFORMATTED).extractClearingNr());
-		assertEquals(CLEARING, new IBAN(IBAN_2_UNFORMATTED).extractClearingNr());
+	@Nested
+	class ToString {
+
+		@Test
+		public void formats_with_blanks_after_4_chars() {
+			assertThat(new IBAN(IBAN_1))
+				.hasToString(IBAN_1);
+			assertThat(new IBAN(IBAN_1_UNFORMATTED))
+				.hasToString(IBAN_1);
+
+			assertThat(new IBAN("CH"))
+				.hasToString("CH");
+			assertThat(new IBAN("CH63"))
+				.hasToString("CH63");
+			assertThat(new IBAN("123456789"))
+				.hasToString("1234 5678 9");
+			assertThat(new IBAN("123456789    0123456789                    "))
+				.hasToString("1234 5678 9012 3456 789");
+			assertThat(new IBAN("12345678901234567890"))
+				.hasToString("1234 5678 9012 3456 7890");
+			assertThat(new IBAN("123456789012345678901"))
+				.hasToString("1234 5678 9012 3456 7890 1");
+		}
 	}
 
-	@Test
-	public void testExtractClearingNumberValid() {
-		IllegalArgumentException ex = assertThrows(
-			IllegalArgumentException.class,
-			() -> new IBAN("InvalidNumber").extractClearingNr()
-		);
+	@Nested
+	class CompareTo {
 
-		assertThat(ex)
-			.hasMessageContaining("InvalidNumber");
+		@Test
+		public void returns_zero_for_equal_value() {
+			assertThat(new IBAN("CH63 0900 0000 2500 9779 8").compareTo(new IBAN("CH63 0900 0000 2500 9779 8")))
+				.isZero();
+		}
+
+		@Test
+		public void orders_ascending() {
+			assertThat(new IBAN("CH63 0900 0000 2500 9779 8").compareTo(new IBAN("CH63 0900 0000 2500 9779 9")))
+				.isNegative();
+			assertThat(new IBAN("CH63 0900 0000 2500 9779 8").compareTo(new IBAN("CH63 0900 0000 2500 9779 7")))
+				.isPositive();
+		}
+
 	}
+
 }
